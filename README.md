@@ -79,7 +79,7 @@ Happy Coding 🚀
 
 ## 🌐 Live Demo
 
-Coming soon...
+https://rahulgupta143.github.io/js-practice-playground/
 
 ---
 
