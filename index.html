@@ -27,21 +27,89 @@
         color: white;
       }
 
+      /* ===== TOPBAR ===== */
       .topbar {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
+        align-items: center;
         padding: 12px 16px;
-        background: #020617;
+        background: #020617; /* dark background */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
       }
 
+      .topbar span {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #fff;
+      }
+
+      /* ===== BUTTONS ===== */
       .topbar button {
-        background: linear-gradient(135deg, #6366f1, #22d3ee);
+        background: linear-gradient(
+          135deg,
+          #6366f1,
+          #22d3ee
+        ); /* gradient buttons */
         border: none;
         color: white;
         padding: 8px 14px;
         border-radius: 8px;
         font-weight: bold;
         cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .topbar button:hover {
+        transform: scale(1.1);
+        box-shadow:
+          0 4px 12px rgba(99, 102, 241, 0.6),
+          0 4px 12px rgba(34, 211, 238, 0.6);
+      }
+
+      /* ===== SYMBOL BUTTONS ===== */
+      .topbar div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media screen and (max-width: 768px) {
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 10px 12px;
+        }
+
+        .topbar span {
+          margin-bottom: 6px;
+        }
+
+        .topbar div {
+          width: 100%;
+          justify-content: flex-start;
+        }
+
+        .topbar button {
+          flex: 1 1 22%;
+          text-align: center;
+          font-size: 0.85rem;
+          padding: 6px 10px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .topbar button {
+          flex: 1 1 30%;
+          font-size: 0.8rem;
+          padding: 5px 8px;
+        }
       }
 
       .editor-wrap {
@@ -76,61 +144,7 @@
         width: 100%;
         background: linear-gradient(135deg, #22c55e, #16a34a);
       }
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        background: #020617;
-      }
 
-      .topbar > div {
-        display: flex;
-        gap: 10px;
-      }
-
-      .topbar button {
-        min-width: 80px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-
-        background: linear-gradient(135deg, #6366f1, #22d3ee);
-        border: none;
-        color: white;
-        padding: 0 14px;
-        border-radius: 10px;
-
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .topbar button:hover {
-        transform: translateY(-1px);
-        opacity: 0.95;
-      }
-
-      .topbar button:active {
-        transform: scale(0.96);
-      }
-      @media (max-width: 480px) {
-        .topbar {
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .topbar > div {
-          width: 100%;
-        }
-
-        .topbar button {
-          flex: 1;
-        }
-      }
       .app-footer {
         margin-top: 16px;
         padding: 12px 16px;
@@ -159,9 +173,25 @@
     <div class="topbar">
       <span>⚡Rahul JS Practice Editor</span>
       <div>
-        <button onclick="runCode()">▶ Run</button>
-        <button onclick="toggleTheme()">🌗 Theme</button>
-        <button onclick="clearCode()">🧹 Clear</button>
+        <button onclick="runCode()">▶Run</button>
+        <button onclick="toggleTheme()">🌗Theme</button>
+        <button onclick="clearCode()">🧹Cle</button>
+        <!-- Symbols for mobile coding -->
+        <button onclick="insertSymbol('+')">+</button>
+        <button onclick="insertSymbol('-')">-</button>
+        <button onclick="insertSymbol('*')">*</button>
+        <button onclick="insertSymbol('/')">/</button>
+        <button onclick="insertSymbol('%')">%</button>
+        <button onclick="insertSymbol('&&')">&&</button>
+        <button onclick="insertSymbol('||')">||</button>
+        <button onclick="insertSymbol('!')">!</button>
+        <button onclick="insertSymbol('===')">===</button>
+        <button onclick="insertSymbol('=')">=</button>
+        <button onclick="insertSymbol('`')">`</button>
+        <button onclick="insertSymbol('&quot;')">"</button>
+        <button onclick="insertSymbol('\'')">'</button>
+        <button onclick="insertSymbol('${}')">${}</button>
+        <button onclick="insertSymbol('{}')">{}</button>
       </div>
     </div>
 
@@ -196,21 +226,94 @@ console.log("Hello Rahul");
       </div>
 
       <div id="scoreBox" style="margin-top: 8px; font-weight: bold"></div>
+
       <footer class="app-footer">
         <span>⚡ JS Practice Editor</span>
         <span>Made with ❤️ by Rahul</span>
       </footer>
     </div>
-
-    <!-- CodeMirror -->
+    <!-- CodeMirror core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
 
+    <!-- Autocomplete addons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+
     <script>
+      // ===== CODE EDITOR =====
       let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
         mode: "javascript",
         theme: "material-darker",
         lineNumbers: true,
+        autoCloseBrackets: true,
+        extraKeys: {
+          "Ctrl-Space": "autocomplete",
+          Tab: function (cm) {
+            if (cm.state.completionActive) cm.state.completionActive.pick();
+            else cm.replaceSelection("    ");
+          },
+        },
+      });
+
+      // Custom JS keywords + snippet
+      const jsKeywords = [
+        { text: "console.log();", displayText: "console.log()" },
+        { text: "function myFunc() {\n\t\n}", displayText: "function" },
+        {
+          text: "for (let i = 0; i < ; i++) {\n\t\n}",
+          displayText: "for loop",
+        },
+        { text: "if () {\n\t\n}", displayText: "if statement" },
+        { text: "else {\n\t\n}", displayText: "else statement" },
+        { text: "const ", displayText: "const" },
+        { text: "let ", displayText: "let" },
+        { text: "var ", displayText: "var" },
+        { text: "return ", displayText: "return" },
+      ];
+
+      function runCode() {
+        let output = document.getElementById("output");
+        output.innerHTML = "<b>💻 Terminal</b><br><br>";
+        try {
+          let oldLog = console.log;
+          console.log = (msg) => (output.innerHTML += msg + "<br>");
+          eval(editor.getValue());
+          console.log = oldLog;
+        } catch (e) {
+          output.innerHTML += "❌ " + e;
+        }
+      }
+
+      // Autocomplete function
+      function customHint(cm) {
+        const cursor = cm.getCursor();
+        const token = cm.getTokenAt(cursor);
+        const start = token.start;
+        const end = cursor.ch;
+        const word = token.string.slice(0, end - start);
+
+        const list = jsKeywords
+          .filter((item) => item.text.startsWith(word))
+          .map((item) => item);
+
+        return {
+          list: list.length ? list : jsKeywords,
+          from: CodeMirror.Pos(cursor.line, start),
+          to: CodeMirror.Pos(cursor.line, end),
+        };
+      }
+
+      // Bind autocomplete on typing
+      editor.on("inputRead", function (cm, change) {
+        if (change.text[0].match(/[\w\.]/)) {
+          // trigger for letters or dot
+          cm.showHint({ hint: customHint });
+        }
       });
 
       function runCode() {
@@ -238,6 +341,14 @@ console.log("Hello Rahul");
             ? "eclipse"
             : "material-darker";
         editor.setOption("theme", theme);
+      }
+
+      // ===== SYMBOL INSERT FUNCTION =====
+      function insertSymbol(sym) {
+        let doc = editor.getDoc();
+        let cursor = doc.getCursor();
+        doc.replaceRange(sym, cursor);
+        editor.focus();
       }
 
       /* ===== INTERVIEW + MCQ SYSTEM ===== */
@@ -676,24 +787,67 @@ console.log("Hello Rahul");
             answer: 3,
           },
         },
+        {
+          q: "Which symbol is used for addition in JS?",
+          a: "+",
+          mcq: {
+            options: ["+", "-", "*", "/"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which symbol is used for strict equality?",
+          a: "===",
+          mcq: {
+            options: ["==", "=", "===", "!="],
+            answer: 2,
+          },
+        },
+        {
+          q: "Which symbol is used for logical AND?",
+          a: "&&",
+          mcq: {
+            options: ["||", "&&", "!", "%"],
+            answer: 1,
+          },
+        },
+        {
+          q: "Which is used for template literals?",
+          a: "Backtick (`)",
+          mcq: {
+            options: [
+              "Single quote (')",
+              'Double quote (")',
+              "Backtick (`)",
+              "Dollar sign ($)",
+            ],
+            answer: 2,
+          },
+        },
+        {
+          q: "Which symbol is used in variables for template interpolation?",
+          a: "${}",
+          mcq: {
+            options: ["$()", "${}", "#{}", "@{}"],
+            answer: 1,
+          },
+        },
       ];
-
-      let index = 0;
-      let showAnswer = true;
-      let score = 0;
-      let attempted = 0;
-      let mcqMode = false;
-
+      let index = 0,
+        showAnswer = true,
+        score = 0,
+        attempted = 0,
+        mcqMode = false;
       const box = document.getElementById("interviewBox");
       const scoreBox = document.getElementById("scoreBox");
 
       function renderQuestion() {
         const d = interviewData[index];
         box.innerHTML = `
-        🧠 <b>Interview Practice</b><br><br>
-        <b>Q${index + 1}.</b> ${d.q}<br><br>
-        ${showAnswer ? `<b>Ans:</b> ${d.a}` : `<i>Answer hidden</i>`}
-      `;
+      🧠 <b>Interview Practice</b><br><br>
+      <b>Q${index + 1}.</b> ${d.q}<br><br>
+      ${showAnswer ? `<b>Ans:</b> ${d.a}` : `<i>Answer hidden</i>`}
+    `;
       }
 
       function nextQuestion() {
@@ -702,14 +856,12 @@ console.log("Hello Rahul");
         mcqMode = false;
         renderQuestion();
       }
-
       function prevQuestion() {
         index = (index - 1 + interviewData.length) % interviewData.length;
         showAnswer = true;
         mcqMode = false;
         renderQuestion();
       }
-
       function toggleAnswer() {
         showAnswer = !showAnswer;
         renderQuestion();
@@ -723,15 +875,10 @@ console.log("Hello Rahul");
       function loadMCQ() {
         const d = interviewData[index];
         box.innerHTML = `
-        📝 <b>MCQ Test</b><br><br>
-        <b>Q.</b> ${d.q}<br><br>
-        ${d.mcq.options
-          .map(
-            (o, i) =>
-              `<button class="iq-btn" style="margin-bottom:6px" onclick="checkMCQ(${i})">${o}</button>`,
-          )
-          .join("")}
-      `;
+      📝 <b>MCQ Test</b><br><br>
+      <b>Q.</b> ${d.q}<br><br>
+      ${d.mcq.options.map((o, i) => `<button class="iq-btn" style="margin-bottom:6px" onclick="checkMCQ(${i})">${o}</button>`).join("")}
+    `;
       }
 
       function checkMCQ(selected) {
@@ -744,7 +891,6 @@ console.log("Hello Rahul");
         index = (index + 1) % interviewData.length;
         if (mcqMode) loadMCQ();
       }
-
       function exitMCQ() {
         mcqMode = false;
         renderQuestion();
