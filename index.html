@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rahul JS Practice Editor</title>
+
+    <!-- CodeMirror -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: #0f172a;
+        color: white;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #020617;
+      }
+
+      .topbar button {
+        background: linear-gradient(135deg, #6366f1, #22d3ee);
+        border: none;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .editor-wrap {
+        padding: 10px;
+      }
+
+      .CodeMirror {
+        height: 55vh;
+        border-radius: 12px;
+      }
+
+      .output,
+      .interview {
+        margin-top: 10px;
+        background: #020617;
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      .iq-btn {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6366f1, #22d3ee);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .mcq {
+        width: 100%;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: #020617;
+      }
+
+      .topbar > div {
+        display: flex;
+        gap: 10px;
+      }
+
+      .topbar button {
+        min-width: 80px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+
+        background: linear-gradient(135deg, #6366f1, #22d3ee);
+        border: none;
+        color: white;
+        padding: 0 14px;
+        border-radius: 10px;
+
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .topbar button:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+      }
+
+      .topbar button:active {
+        transform: scale(0.96);
+      }
+      @media (max-width: 480px) {
+        .topbar {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .topbar > div {
+          width: 100%;
+        }
+
+        .topbar button {
+          flex: 1;
+        }
+      }
+      .app-footer {
+        margin-top: 16px;
+        padding: 12px 16px;
+        background: #020617;
+        color: #cbd5f5;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        font-size: 13px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      @media (max-width: 480px) {
+        .app-footer {
+          flex-direction: column;
+          gap: 6px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="topbar">
+      <span>⚡Rahul JS Practice Editor</span>
+      <div>
+        <button onclick="runCode()">▶ Run</button>
+        <button onclick="toggleTheme()">🌗 Theme</button>
+        <button onclick="clearCode()">🧹 Clear</button>
+      </div>
+    </div>
+
+    <div class="editor-wrap">
+      <textarea id="editor">
+// Try JS here
+console.log("Hello Rahul");
+    </textarea
+      >
+
+      <!-- TERMINAL -->
+      <div class="output" id="output"><b>💻 Terminal</b><br /><br /></div>
+
+      <!-- INTERVIEW -->
+      <div class="interview" id="interviewBox"></div>
+
+      <div style="display: flex; gap: 8px; margin-top: 8px">
+        <button onclick="prevQuestion()" class="iq-btn">⬅ Previous</button>
+        <button onclick="toggleAnswer()" class="iq-btn">👁 Show / Hide</button>
+        <button onclick="nextQuestion()" class="iq-btn">Next ➡</button>
+      </div>
+
+      <div style="margin-top: 8px">
+        <button onclick="startMCQ()" class="iq-btn mcq">
+          📝 Start MCQ Test
+        </button>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 8px">
+        <button onclick="nextMCQ()" class="iq-btn">➡ Next MCQ</button>
+        <button onclick="exitMCQ()" class="iq-btn">❌ Exit MCQ</button>
+      </div>
+
+      <div id="scoreBox" style="margin-top: 8px; font-weight: bold"></div>
+      <footer class="app-footer">
+        <span>⚡ JS Practice Editor</span>
+        <span>Made with ❤️ by Rahul</span>
+      </footer>
+    </div>
+
+    <!-- CodeMirror -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+
+    <script>
+      let editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        mode: "javascript",
+        theme: "material-darker",
+        lineNumbers: true,
+      });
+
+      function runCode() {
+        let output = document.getElementById("output");
+        output.innerHTML = "<b>💻 Terminal</b><br><br>";
+        try {
+          let oldLog = console.log;
+          console.log = (msg) => (output.innerHTML += msg + "<br>");
+          eval(editor.getValue());
+          console.log = oldLog;
+        } catch (e) {
+          output.innerHTML += "❌ " + e;
+        }
+      }
+
+      function clearCode() {
+        editor.setValue("");
+        document.getElementById("output").innerHTML =
+          "<b>💻 Terminal</b><br><br>Cleared";
+      }
+
+      function toggleTheme() {
+        const theme =
+          editor.getOption("theme") === "material-darker"
+            ? "eclipse"
+            : "material-darker";
+        editor.setOption("theme", theme);
+      }
+
+      /* ===== INTERVIEW + MCQ SYSTEM ===== */
+
+      const interviewData = [
+        {
+          q: "What is the output of console.log(2 + 2)?",
+          a: "4",
+          mcq: {
+            options: ["4", "22", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which is a valid JavaScript variable name?",
+          a: "variable_1",
+          mcq: {
+            options: ["1variable", "variable-1", "variable_1", "variable 1"],
+            answer: 2,
+          },
+        },
+        {
+          q: "What is the output of typeof 'hello'?",
+          a: "string",
+          mcq: {
+            options: ["string", "number", "boolean", "object"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is an array method?",
+          a: "All of the above",
+          mcq: {
+            options: ["push()", "pop()", "shift()", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(5 > 3)?",
+          a: "true",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is the output of console.log(2 == '2')?",
+          a: "true",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which is a logical operator?",
+          a: "All of the above",
+          mcq: {
+            options: ["&&", "||", "!", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(!true)?",
+          a: "false",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 1,
+          },
+        },
+        {
+          q: "Which is a function declaration?",
+          a: "All of the above",
+          mcq: {
+            options: [
+              "function foo() {}",
+              "let foo = function() {}",
+              "const foo = () => {}",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of [1,2,3].indexOf(2)?",
+          a: "1",
+          mcq: {
+            options: ["1", "2", "-1", "Error"],
+            answer: 0,
+          },
+        },
+        {
+          q: "How can you create an object?",
+          a: "All of the above",
+          mcq: {
+            options: [
+              "{}",
+              "new Object()",
+              "Object.create(null)",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of 'hello'.length?",
+          a: "5",
+          mcq: {
+            options: ["5", "6", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is the output of 5 === '5'?",
+          a: "false",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 1,
+          },
+        },
+        {
+          q: "What is the output of null == undefined?",
+          a: "true",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is a Promise?",
+          a: "Represents future value",
+          mcq: {
+            options: ["Loop", "Object", "Future value", "Variable"],
+            answer: 2,
+          },
+        },
+        {
+          q: "What is the output of [1,2,3].reduce((a,b)=>a+b,0)?",
+          a: "6",
+          mcq: {
+            options: ["6", "Error", "NaN", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is the output of 'hello'.split('').reverse().join('')?",
+          a: "olleh",
+          mcq: {
+            options: ["olleh", "Error", "NaN", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is the output of [1,2,3].every(x => x > 0)?",
+          a: "true",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is the output of 'hello'.includes('ll')?",
+          a: "true",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "What is event loop?",
+          a: "Manages async tasks",
+          mcq: {
+            options: ["Loop", "Thread", "Async handler", "Compiler"],
+            answer: 2,
+          },
+        },
+        // ===== MCQs 61–90 =====
+
+        {
+          q: "What is the output of console.log(10 % 3);",
+          mcq: {
+            options: ["1", "2", "3", "Error"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a valid JavaScript variable name?",
+          mcq: {
+            options: ["1variable", "variable-1", "variable_1", "variable 1"],
+            answer: 2,
+          },
+        },
+        {
+          q: "What is the output of console.log(typeof NaN);",
+          mcq: {
+            options: ["number", "string", "boolean", "undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is an array method?",
+          mcq: {
+            options: ["push()", "pop()", "shift()", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(5 > 3);",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a comparison operator?",
+          mcq: {
+            options: ["==", "!=", "===", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(null === undefined);",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 1,
+          },
+        },
+        {
+          q: "Which of the following is a logical operator?",
+          mcq: {
+            options: ["&&", "||", "!", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(!true);",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 1,
+          },
+        },
+        {
+          q: "Which of the following is a function declaration?",
+          mcq: {
+            options: [
+              "function foo() {}",
+              "let foo = function() {}",
+              "const foo = () => {}",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+
+        // ===== Medium 71–80 =====
+
+        {
+          q: "What is the output of console.log([1, 2, 3].indexOf(2));",
+          mcq: {
+            options: ["1", "2", "-1", "Error"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to create an object?",
+          mcq: {
+            options: [
+              "let obj = {}",
+              "let obj = new Object()",
+              "let obj = Object.create(null)",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log('hello'.length);",
+          mcq: {
+            options: ["5", "6", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is an array method?",
+          mcq: {
+            options: ["map()", "filter()", "reduce()", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(5 === '5');",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 1,
+          },
+        },
+        {
+          q: "Which of the following is a way to iterate over an array?",
+          mcq: {
+            options: [
+              "for loop",
+              "forEach()",
+              "for-of loop",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(null == undefined);",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to handle errors?",
+          mcq: {
+            options: [
+              "try-catch block",
+              "throw statement",
+              "Error object",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log('hello' + 2);",
+          mcq: {
+            options: ["hello2", "Error", "NaN", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to create a promise?",
+          mcq: {
+            options: [
+              "new Promise()",
+              "Promise.resolve()",
+              "Promise.reject()",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+
+        // ===== Advanced 81–90 =====
+
+        {
+          q: "What is the output of console.log([1, 2, 3].reduce((a, b) => a + b, 0));",
+          mcq: {
+            options: ["6", "Error", "NaN", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to create a class?",
+          mcq: {
+            options: [
+              "class MyClass {}",
+              "function MyClass() {}",
+              "let MyClass = class {}",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log(Object.keys({a:1,b:2,c:3}).length);",
+          mcq: {
+            options: ["3", "Error", "NaN", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to handle async code?",
+          mcq: {
+            options: [
+              "callbacks",
+              "promises",
+              "async/await",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log('hello'.split('').reverse().join(''));",
+          mcq: {
+            options: ["olleh", "Error", "NaN", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to create a generator?",
+          mcq: {
+            options: [
+              "function* myGenerator() {}",
+              "function myGenerator() {}",
+              "let myGenerator = function*() {}",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log([1,2,3].every(x => x > 0));",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to create a module?",
+          mcq: {
+            options: ["ES6 modules", "CommonJS", "AMD", "All of the above"],
+            answer: 3,
+          },
+        },
+        {
+          q: "What is the output of console.log('hello'.includes('ll'));",
+          mcq: {
+            options: ["true", "false", "Error", "Undefined"],
+            answer: 0,
+          },
+        },
+        {
+          q: "Which of the following is a way to handle events?",
+          mcq: {
+            options: [
+              "addEventListener()",
+              "removeEventListener()",
+              "dispatchEvent()",
+              "All of the above",
+            ],
+            answer: 3,
+          },
+        },
+      ];
+
+      let index = 0;
+      let showAnswer = true;
+      let score = 0;
+      let attempted = 0;
+      let mcqMode = false;
+
+      const box = document.getElementById("interviewBox");
+      const scoreBox = document.getElementById("scoreBox");
+
+      function renderQuestion() {
+        const d = interviewData[index];
+        box.innerHTML = `
+        🧠 <b>Interview Practice</b><br><br>
+        <b>Q${index + 1}.</b> ${d.q}<br><br>
+        ${showAnswer ? `<b>Ans:</b> ${d.a}` : `<i>Answer hidden</i>`}
+      `;
+      }
+
+      function nextQuestion() {
+        index = (index + 1) % interviewData.length;
+        showAnswer = true;
+        mcqMode = false;
+        renderQuestion();
+      }
+
+      function prevQuestion() {
+        index = (index - 1 + interviewData.length) % interviewData.length;
+        showAnswer = true;
+        mcqMode = false;
+        renderQuestion();
+      }
+
+      function toggleAnswer() {
+        showAnswer = !showAnswer;
+        renderQuestion();
+      }
+
+      function startMCQ() {
+        mcqMode = true;
+        loadMCQ();
+      }
+
+      function loadMCQ() {
+        const d = interviewData[index];
+        box.innerHTML = `
+        📝 <b>MCQ Test</b><br><br>
+        <b>Q.</b> ${d.q}<br><br>
+        ${d.mcq.options
+          .map(
+            (o, i) =>
+              `<button class="iq-btn" style="margin-bottom:6px" onclick="checkMCQ(${i})">${o}</button>`,
+          )
+          .join("")}
+      `;
+      }
+
+      function checkMCQ(selected) {
+        attempted++;
+        if (selected === interviewData[index].mcq.answer) score++;
+        scoreBox.innerHTML = `✅ Score: ${score} / ${attempted}`;
+      }
+
+      function nextMCQ() {
+        index = (index + 1) % interviewData.length;
+        if (mcqMode) loadMCQ();
+      }
+
+      function exitMCQ() {
+        mcqMode = false;
+        renderQuestion();
+      }
+
+      renderQuestion();
+    </script>
+  </body>
+</html>
