@@ -76,10 +76,10 @@ Happy Coding 🚀
 5. Start MCQ test and track your score
 
 ---
-
 ## 🌐 Live Demo
 
-Click Here:- (https://rahulgupta143.github.io/js-practice-playground/)
+👉 https://rahulgupta143.github.io/js-practice-playground/  
+Try it in your browser — code live, practice MCQs & interview questions 🚀
 
 ---
 
