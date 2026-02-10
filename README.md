@@ -31,55 +31,25 @@ JS Practice Playground is a simple and powerful **JavaScript practice web app** 
 - JavaScript (Vanilla JS)  
 - CodeMirror Editor  
 
-
 ---
-
-## 🧪 How to Use
-
-1. Open `index.html` in your browser
-2. Write JavaScript code in the editor
-3. Click **Run** to see output in terminal
-4. Practice interview questions
-5. Start MCQ test and track your score
-
----
-
-## 🌐 Live Demo
-
-Coming soon...
-
----
-
-## 👨‍💻 Author
-
-**Rahul Gupta**  
-JavaScript Learner | Backend Developer Aspirant  
-GitHub: https://github.com/rahulgupta143
-
----
-
-## ⭐ Support
-
-If you find this project useful, please give it a ⭐ on GitHub  
-Happy Coding 🚀
-
 
 
 ---
 
-## 🧪 How to Use
-
-1. Open `index.html` in your browser
-2. Write JavaScript code in the editor
-3. Click **Run** to see output in terminal
-4. Practice interview questions
-5. Start MCQ test and track your score
-
----
 ## 🌐 Live Demo
 
 👉 https://rahulgupta143.github.io/js-practice-playground/  
 Try it in your browser — code live, practice MCQs & interview questions 🚀
+
+---
+
+## 🧪 How to Use
+
+1. Open the **Live Demo** in your browser  
+2. Write JavaScript code in the editor  
+3. Click **Run** to see output in terminal  
+4. Practice interview questions  
+5. Start MCQ test and track your score
 
 ---
 
